@@ -13,20 +13,27 @@
 
     h1 {
       font-size: 2.5em;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+    }
+
+    .layout {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
     }
 
     #timer {
-      font-size: 3em;
-      margin: 20px 0;
+      font-size: 4em;
       color: #4b0082;
+      margin-bottom: 20px;
     }
 
     .circle-container {
       position: relative;
       width: 250px;
       height: 250px;
-      margin: 0 auto 30px;
     }
 
     svg {
@@ -48,7 +55,11 @@
       transition: stroke-dashoffset 1s linear;
     }
 
-    input[type="number"] {
+    .controls {
+      margin-top: 30px;
+    }
+
+    .time-select input[type="number"] {
       width: 70px;
       font-size: 1.5em;
       text-align: center;
@@ -74,28 +85,32 @@
 <body>
   <h1>Countdown Clock Timer</h1>
 
-  <div class="circle-container">
-    <svg width="250" height="250">
-      <circle class="bg" cx="125" cy="125" r="100" />
-      <circle class="progress" id="progressCircle" cx="125" cy="125" r="100" stroke-dasharray="628" stroke-dashoffset="0" />
-    </svg>
-    <div id="timer">00:00</div>
+  <div class="layout">
+    <div>
+      <div id="timer">00:00</div>
+
+      <div class="time-select">
+        <label>Minutes:</label>
+        <input type="number" id="minutes" min="0" value="1">
+        <label>Seconds:</label>
+        <input type="number" id="seconds" min="0" max="59" value="0">
+      </div>
+    </div>
+
+    <div class="circle-container">
+      <svg width="250" height="250">
+        <circle class="bg" cx="125" cy="125" r="100" />
+        <circle class="progress" id="progressCircle" cx="125" cy="125" r="100" stroke-dasharray="628" stroke-dashoffset="0" />
+      </svg>
+    </div>
   </div>
 
-  <div>
-    <label>Minutes:</label>
-    <input type="number" id="minutes" min="0" value="1">
-    <label>Seconds:</label>
-    <input type="number" id="seconds" min="0" max="59" value="0">
-  </div>
-
-  <div>
+  <div class="controls">
     <button onclick="startTimer()">Start</button>
     <button onclick="pauseTimer()">Pause</button>
     <button onclick="resetTimer()">Reset</button>
   </div>
 
-  <!-- Harp-style sound -->
   <audio id="alarmSound" src="https://cdn.pixabay.com/download/audio/2022/10/11/audio_2b9b5f99b2.mp3?filename=magic-harp-notification-116166.mp3" preload="auto"></audio>
 
   <script>
@@ -170,7 +185,6 @@
       updateCircle();
     }
 
-    // Initial UI setup
     updateDisplay();
     updateCircle();
   </script>
