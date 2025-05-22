@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Countdown Timer</title>
+  <title>Synced Hourglass Timer</title>
   <style>
     body {
       font-family: 'Fredoka', sans-serif;
@@ -17,7 +17,7 @@
     }
 
     #timer {
-      font-size: 6em;
+      font-size: 5em;
       color: #4b0082;
       margin: 20px;
     }
@@ -43,42 +43,106 @@
     button:hover {
       background-color: #5a4acb;
     }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .hourglass {
+      position: relative;
+      width: 80px;
+      height: 160px;
+      background: transparent;
+      margin-top: 40px;
+    }
+
+    .hourglass::before, .hourglass::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      border: 4px solid #4b0082;
+      box-sizing: border-box;
+      border-left: transparent;
+      border-right: transparent;
+    }
+
+    .hourglass::before {
+      top: 0;
+      border-bottom: none;
+      border-radius: 0 0 50% 50%;
+    }
+
+    .hourglass::after {
+      bottom: 0;
+      border-top: none;
+      border-radius: 50% 50% 0 0;
+    }
+
+    .sand {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: #f1c40f;
+      transform-origin: top;
+      z-index: -1;
+      border-radius: 0 0 50% 50%;
+    }
   </style>
 </head>
 <body>
-  <h1>Countdown Timer</h1>
+  <h1>Countdown Timer with Hourglass</h1>
 
-  <div>
-    <label>Minutes:</label>
-    <input type="number" id="minutes" min="0" value="5">
-    <label>Seconds:</label>
-    <input type="number" id="seconds" min="0" max="59" value="0">
+  <div class="container">
+    <div>
+      <div>
+        <label>Minutes:</label>
+        <input type="number" id="minutes" min="0" value="5">
+        <label>Seconds:</label>
+        <input type="number" id="seconds" min="0" max="59" value="0">
+      </div>
+      <div id="timer">05:00</div>
+      <button onclick="startTimer()">Start</button>
+      <button onclick="pauseTimer()">Pause</button>
+      <button onclick="resetTimer()">Reset</button>
+    </div>
+
+    <div class="hourglass">
+      <div class="sand" id="sand"></div>
+    </div>
   </div>
-
-  <div id="timer">05:00</div>
-
-  <button onclick="startTimer()">Start</button>
-  <button onclick="pauseTimer()">Pause</button>
-  <button onclick="resetTimer()">Reset</button>
 
   <script>
     let countdown;
     let totalSeconds = 300;
+    let currentSeconds = 300;
     let isRunning = false;
+    let initialSeconds = 300;
 
     function updateDisplay() {
-      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      const minutes = String(Math.floor(currentSeconds / 60)).padStart(2, '0');
+      const seconds = String(currentSeconds % 60).padStart(2, '0');
       document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+    }
+
+    function updateSand() {
+      const percentRemaining = currentSeconds / initialSeconds;
+      document.getElementById('sand').style.transform = `scaleY(${percentRemaining})`;
     }
 
     function startTimer() {
       if (isRunning) return;
 
-      // Only set totalSeconds on first start or reset
       const min = parseInt(document.getElementById('minutes').value) || 0;
       const sec = parseInt(document.getElementById('seconds').value) || 0;
-      totalSeconds = min * 60 + sec;
+      initialSeconds = totalSeconds = currentSeconds = min * 60 + sec;
 
       if (totalSeconds <= 0) {
         alert("Set a time greater than 0.");
@@ -87,11 +151,13 @@
 
       isRunning = true;
       updateDisplay();
+      updateSand();
 
       countdown = setInterval(() => {
-        if (totalSeconds > 0) {
-          totalSeconds--;
+        if (currentSeconds > 0) {
+          currentSeconds--;
           updateDisplay();
+          updateSand();
         } else {
           clearInterval(countdown);
           isRunning = false;
@@ -109,12 +175,14 @@
       pauseTimer();
       const min = parseInt(document.getElementById('minutes').value) || 0;
       const sec = parseInt(document.getElementById('seconds').value) || 0;
-      totalSeconds = min * 60 + sec;
+      initialSeconds = totalSeconds = currentSeconds = min * 60 + sec;
       updateDisplay();
+      updateSand();
     }
 
-    // Initial display
+    // Initial setup
     updateDisplay();
+    updateSand();
   </script>
 </body>
 </html>
