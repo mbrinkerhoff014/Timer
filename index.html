@@ -166,8 +166,11 @@
           clearInterval(countdown);
           isRunning = false;
           updateCircle();
-          alarmSound.play().catch(e => console.error("Sound failed to play:", e));
-          alert("Time’s up!");
+          alarmSound.play().then(() => {
+  alert("Time's up!");
+  alarmSound.pause();
+  alarmSound.currentTime = 0;
+});
         }
       }, 1000);
     }
