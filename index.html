@@ -111,7 +111,10 @@
     <button onclick="resetTimer()">Reset</button>
   </div>
 
-  <audio id="alarmSound" src="https://cdn.pixabay.com/download/audio/2022/10/11/audio_2b9b5f99b2.mp3?filename=magic-harp-notification-116166.mp3" preload="auto"></audio>
+ <audio id="alarmSound" preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_f8b55dfc85.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
 
   <script>
     let countdown;
