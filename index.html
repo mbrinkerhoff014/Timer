@@ -2,37 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hourglass Timer</title>
+  <title>Circular Countdown Timer</title>
   <style>
     body {
       font-family: 'Fredoka', sans-serif;
-      background: white;
+      background-color: white;
       text-align: center;
-      padding: 50px;
+      padding: 40px;
     }
 
     h1 {
-      font-size: 3em;
+      font-size: 2.5em;
       margin-bottom: 20px;
     }
 
     #timer {
-      font-size: 5em;
+      font-size: 3em;
+      margin: 20px 0;
       color: #4b0082;
-      margin: 20px;
+    }
+
+    .circle-container {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      margin: 0 auto 30px;
+    }
+
+    svg {
+      transform: rotate(-90deg);
+    }
+
+    circle {
+      fill: none;
+      stroke-width: 16;
+    }
+
+    .bg {
+      stroke: #eee;
+    }
+
+    .progress {
+      stroke: #6c5ce7;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s linear;
     }
 
     input[type="number"] {
-      width: 80px;
+      width: 70px;
       font-size: 1.5em;
       text-align: center;
-      margin: 10px;
+      margin: 0 10px;
     }
 
     button {
-      font-size: 1.25em;
+      font-size: 1.2em;
       padding: 10px 20px;
-      margin: 10px;
+      margin: 10px 5px;
       background-color: #6c5ce7;
       color: white;
       border: none;
@@ -43,116 +69,60 @@
     button:hover {
       background-color: #5a4acb;
     }
-
-    .container {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 60px;
-      flex-wrap: wrap;
-    }
-
-    .hourglass {
-      position: relative;
-      width: 140px;
-      height: 280px;
-      margin-top: 40px;
-    }
-
-    .glass-top, .glass-bottom {
-      position: absolute;
-      width: 100%;
-      height: 50%;
-      border: 6px solid #4b0082;
-      box-sizing: border-box;
-      border-left: transparent;
-      border-right: transparent;
-    }
-
-    .glass-top {
-      top: 0;
-      border-bottom: none;
-      border-radius: 0 0 60% 60%;
-    }
-
-    .glass-bottom {
-      bottom: 0;
-      border-top: none;
-      border-radius: 60% 60% 0 0;
-    }
-
-    .sand-top, .sand-bottom {
-      position: absolute;
-      width: 100%;
-      height: 50%;
-      background: #f1c40f;
-      z-index: -1;
-      transition: transform 1s linear;
-    }
-
-    .sand-top {
-      top: 0;
-      border-radius: 0 0 60% 60%;
-      transform-origin: top;
-    }
-
-    .sand-bottom {
-      bottom: 0;
-      border-radius: 60% 60% 0 0;
-      transform-origin: bottom;
-      transform: scaleY(0);
-    }
   </style>
 </head>
 <body>
-  <h1>Countdown Timer with Hourglass</h1>
+  <h1>Countdown Clock Timer</h1>
 
-  <div class="container">
-    <div>
-      <div>
-        <label>Minutes:</label>
-        <input type="number" id="minutes" min="0" value="5">
-        <label>Seconds:</label>
-        <input type="number" id="seconds" min="0" max="59" value="0">
-      </div>
-      <div id="timer">05:00</div>
-      <button onclick="startTimer()">Start</button>
-      <button onclick="pauseTimer()">Pause</button>
-      <button onclick="resetTimer()">Reset</button>
-    </div>
-
-    <div class="hourglass">
-      <div class="sand-top" id="sandTop"></div>
-      <div class="sand-bottom" id="sandBottom"></div>
-      <div class="glass-top"></div>
-      <div class="glass-bottom"></div>
-    </div>
+  <div class="circle-container">
+    <svg width="250" height="250">
+      <circle class="bg" cx="125" cy="125" r="100" />
+      <circle class="progress" id="progressCircle" cx="125" cy="125" r="100" stroke-dasharray="628" stroke-dashoffset="0" />
+    </svg>
+    <div id="timer">00:00</div>
   </div>
 
-  <!-- Chime sound -->
-  <audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
+  <div>
+    <label>Minutes:</label>
+    <input type="number" id="minutes" min="0" value="1">
+    <label>Seconds:</label>
+    <input type="number" id="seconds" min="0" max="59" value="0">
+  </div>
+
+  <div>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="pauseTimer()">Pause</button>
+    <button onclick="resetTimer()">Reset</button>
+  </div>
+
+  <!-- Harp-style sound -->
+  <audio id="alarmSound" src="https://cdn.pixabay.com/download/audio/2022/10/11/audio_2b9b5f99b2.mp3?filename=magic-harp-notification-116166.mp3" preload="auto"></audio>
 
   <script>
     let countdown;
-    let totalSeconds = 300;
-    let currentSeconds = 300;
+    let totalSeconds = 60;
+    let currentSeconds = 60;
     let isRunning = false;
-    let initialSeconds = 300;
+    let initialSeconds = 60;
 
-    const sandTop = document.getElementById("sandTop");
-    const sandBottom = document.getElementById("sandBottom");
+    const timerDisplay = document.getElementById("timer");
+    const progressCircle = document.getElementById("progressCircle");
+    const radius = 100;
+    const circumference = 2 * Math.PI * radius;
     const alarmSound = document.getElementById("alarmSound");
 
+    progressCircle.style.strokeDasharray = `${circumference}`;
+    progressCircle.style.strokeDashoffset = `0`;
+
     function updateDisplay() {
-      const minutes = String(Math.floor(currentSeconds / 60)).padStart(2, '0');
-      const seconds = String(currentSeconds % 60).padStart(2, '0');
-      document.getElementById('timer').textContent = `${minutes}:${seconds}`;
+      const min = String(Math.floor(currentSeconds / 60)).padStart(2, '0');
+      const sec = String(currentSeconds % 60).padStart(2, '0');
+      timerDisplay.textContent = `${min}:${sec}`;
     }
 
-    function updateSand() {
-      const percent = currentSeconds / initialSeconds;
-      sandTop.style.transform = `scaleY(${percent})`;
-      sandBottom.style.transform = `scaleY(${1 - percent})`;
+    function updateCircle() {
+      const offset = circumference * (1 - currentSeconds / initialSeconds);
+      progressCircle.style.strokeDashoffset = offset;
     }
 
     function startTimer() {
@@ -169,19 +139,19 @@
 
       isRunning = true;
       updateDisplay();
-      updateSand();
+      updateCircle();
 
       countdown = setInterval(() => {
         if (currentSeconds > 0) {
           currentSeconds--;
           updateDisplay();
-          updateSand();
+          updateCircle();
         } else {
           clearInterval(countdown);
           isRunning = false;
-          updateSand();
+          updateCircle();
           alarmSound.play();
-          alert("Time's up!");
+          alert("Time’s up!");
         }
       }, 1000);
     }
@@ -197,12 +167,12 @@
       const sec = parseInt(document.getElementById('seconds').value) || 0;
       initialSeconds = totalSeconds = currentSeconds = min * 60 + sec;
       updateDisplay();
-      updateSand();
+      updateCircle();
     }
 
-    // Initial setup
+    // Initial UI setup
     updateDisplay();
-    updateSand();
+    updateCircle();
   </script>
 </body>
 </html>
