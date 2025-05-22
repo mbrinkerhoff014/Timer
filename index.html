@@ -159,18 +159,22 @@
 
       countdown = setInterval(() => {
         if (currentSeconds > 0) {
-          currentSeconds--;
-          updateDisplay();
-          updateCircle();
-        } else {
-          clearInterval(countdown);
-          isRunning = false;
-          updateCircle();
-          alarmSound.play().then(() => {
-  alert("Time's up!");
-  alarmSound.pause();
-  alarmSound.currentTime = 0;
-});
+  currentSeconds--;
+  updateDisplay();
+  updateSand();
+} else {
+  clearInterval(countdown);
+  isRunning = false;
+  updateSand();
+  alarmSound.play();
+
+  // Use setTimeout to show alert after sound starts playing
+  setTimeout(() => {
+    alert("Time's up!");
+    alarmSound.pause();
+    alarmSound.currentTime = 0;
+  }, 100);  // 100ms delay to allow sound to start
+}
         }
       }, 1000);
     }
