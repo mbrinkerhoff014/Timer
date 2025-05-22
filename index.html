@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Synced Hourglass Timer</title>
+  <title>Hourglass Timer</title>
   <style>
     body {
       font-family: 'Fredoka', sans-serif;
@@ -48,52 +48,59 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      gap: 40px;
+      gap: 60px;
       flex-wrap: wrap;
     }
 
     .hourglass {
       position: relative;
-      width: 80px;
-      height: 160px;
-      background: transparent;
+      width: 140px;
+      height: 280px;
       margin-top: 40px;
     }
 
-    .hourglass::before, .hourglass::after {
-      content: '';
+    .glass-top, .glass-bottom {
       position: absolute;
-      left: 0;
       width: 100%;
       height: 50%;
-      border: 4px solid #4b0082;
+      border: 6px solid #4b0082;
       box-sizing: border-box;
       border-left: transparent;
       border-right: transparent;
     }
 
-    .hourglass::before {
+    .glass-top {
       top: 0;
       border-bottom: none;
-      border-radius: 0 0 50% 50%;
+      border-radius: 0 0 60% 60%;
     }
 
-    .hourglass::after {
+    .glass-bottom {
       bottom: 0;
       border-top: none;
-      border-radius: 50% 50% 0 0;
+      border-radius: 60% 60% 0 0;
     }
 
-    .sand {
+    .sand-top, .sand-bottom {
       position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 50%;
       background: #f1c40f;
-      transform-origin: top;
       z-index: -1;
-      border-radius: 0 0 50% 50%;
+      transition: transform 1s linear;
+    }
+
+    .sand-top {
+      top: 0;
+      border-radius: 0 0 60% 60%;
+      transform-origin: top;
+    }
+
+    .sand-bottom {
+      bottom: 0;
+      border-radius: 60% 60% 0 0;
+      transform-origin: bottom;
+      transform: scaleY(0);
     }
   </style>
 </head>
@@ -115,9 +122,15 @@
     </div>
 
     <div class="hourglass">
-      <div class="sand" id="sand"></div>
+      <div class="sand-top" id="sandTop"></div>
+      <div class="sand-bottom" id="sandBottom"></div>
+      <div class="glass-top"></div>
+      <div class="glass-bottom"></div>
     </div>
   </div>
+
+  <!-- Chime sound -->
+  <audio id="alarmSound" src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" preload="auto"></audio>
 
   <script>
     let countdown;
@@ -126,6 +139,10 @@
     let isRunning = false;
     let initialSeconds = 300;
 
+    const sandTop = document.getElementById("sandTop");
+    const sandBottom = document.getElementById("sandBottom");
+    const alarmSound = document.getElementById("alarmSound");
+
     function updateDisplay() {
       const minutes = String(Math.floor(currentSeconds / 60)).padStart(2, '0');
       const seconds = String(currentSeconds % 60).padStart(2, '0');
@@ -133,8 +150,9 @@
     }
 
     function updateSand() {
-      const percentRemaining = currentSeconds / initialSeconds;
-      document.getElementById('sand').style.transform = `scaleY(${percentRemaining})`;
+      const percent = currentSeconds / initialSeconds;
+      sandTop.style.transform = `scaleY(${percent})`;
+      sandBottom.style.transform = `scaleY(${1 - percent})`;
     }
 
     function startTimer() {
@@ -161,6 +179,8 @@
         } else {
           clearInterval(countdown);
           isRunning = false;
+          updateSand();
+          alarmSound.play();
           alert("Time's up!");
         }
       }, 1000);
