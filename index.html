@@ -111,10 +111,11 @@
     <button onclick="resetTimer()">Reset</button>
   </div>
 
- <audio id="alarmSound" preload="auto">
-  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_f8b55dfc85.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio>
+  <!-- ✅ Harp Sound on Completion -->
+  <audio id="alarmSound" preload="auto">
+    <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_f8b55dfc85.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
 
   <script>
     let countdown;
@@ -168,7 +169,7 @@
           clearInterval(countdown);
           isRunning = false;
           updateCircle();
-          alarmSound.play();
+          alarmSound.play().catch(e => console.error("Sound failed to play:", e));
           alert("Time’s up!");
         }
       }, 1000);
