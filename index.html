@@ -142,51 +142,42 @@
     }
 
     
-    function startTimer() {
-      if (isRunning) return;
+   function startTimer() {
+  if (isRunning) return;
 
-      const min = parseInt(document.getElementById('minutes').value) || 0;
-      const sec = parseInt(document.getElementById('seconds').value) || 0;
-      initialSeconds = totalSeconds = currentSeconds = min * 60 + sec;
+  const min = parseInt(document.getElementById('minutes').value) || 0;
+  const sec = parseInt(document.getElementById('seconds').value) || 0;
+  initialSeconds = totalSeconds = currentSeconds = min * 60 + sec;
 
-      if (totalSeconds <= 0) {
-        alert("Set a time greater than 0.");
-        return;
-
-        countdown = setInterval(() => {
-  if (currentSeconds > 0) {
-    currentSeconds--;
-    updateDisplay();
-    updateCircle(); // <-- corrected
-  } else {
-    clearInterval(countdown);
-    isRunning = false;
-    updateCircle(); // <-- corrected
-    alarmSound.play();
-
-    setTimeout(() => {
-      alert("Time's up!");
-      alarmSound.pause();
-      alarmSound.currentTime = 0;
-    }, 100);
+  if (totalSeconds <= 0) {
+    alert("Set a time greater than 0.");
+    return;
   }
-}, 1000);
-      }
 
-      isRunning = true;
-      updateDisplay();
-      updateCircle();
-
-      countdown = setInterval(() => {
-        if (currentSeconds > 0) {
-  currentSeconds--;
+  isRunning = true;
   updateDisplay();
-  updateSand();
-} else {
-  clearInterval(countdown);
-  isRunning = false;
-  updateSand();
-  alarmSound.play();
+  updateCircle();
+
+  countdown = setInterval(() => {
+    if (currentSeconds > 0) {
+      currentSeconds--;
+      updateDisplay();
+      updateCircle(); // fixed
+    } else {
+      clearInterval(countdown);
+      isRunning = false;
+      updateCircle(); // fixed
+      alarmSound.play();
+
+      setTimeout(() => {
+        alert("Time's up!");
+        alarmSound.pause();
+        alarmSound.currentTime = 0;
+      }, 100);
+    }
+  }, 1000);
+}
+
 
   // Use setTimeout to show alert after sound starts playing
   setTimeout(() => {
