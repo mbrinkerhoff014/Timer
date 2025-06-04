@@ -141,8 +141,7 @@
       progressCircle.style.strokeDashoffset = offset;
     }
 
-    
-   function startTimer() {
+    function startTimer() {
   if (isRunning) return;
 
   const min = parseInt(document.getElementById('minutes').value) || 0;
@@ -177,8 +176,7 @@
     }
   }, 1000);
 }
-
-
+     
   // Use setTimeout to show alert after sound starts playing
   setTimeout(() => {
     alert("Time's up!");
