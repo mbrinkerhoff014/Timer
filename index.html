@@ -142,30 +142,34 @@
     }
 
     function startTimer() {
-  if (isRunning) return;
+  if (isRunning) return; // Prevent multiple intervals
 
-  const min = parseInt(document.getElementById('minutes').value) || 0;
-  const sec = parseInt(document.getElementById('seconds').value) || 0;
-  initialSeconds = totalSeconds = currentSeconds = min * 60 + sec;
+  if (currentSeconds <= 0) {
+    // If no time is set or already at 0, initialize from inputs
+    const min = parseInt(document.getElementById('minutes').value) || 0;
+    const sec = parseInt(document.getElementById('seconds').value) || 0;
+    initialSeconds = totalSeconds = currentSeconds = min * 60 + sec;
 
-  if (totalSeconds <= 0) {
-    alert("Set a time greater than 0.");
-    return;
+    if (totalSeconds <= 0) {
+      alert("Set a time greater than 0.");
+      return;
+    }
+
+    updateDisplay();
+    updateCircle();
   }
 
   isRunning = true;
-  updateDisplay();
-  updateCircle();
 
   countdown = setInterval(() => {
     if (currentSeconds > 0) {
       currentSeconds--;
       updateDisplay();
-      updateCircle(); // fixed
+      updateCircle();
     } else {
       clearInterval(countdown);
       isRunning = false;
-      updateCircle(); // fixed
+      updateCircle();
       alarmSound.play();
 
       setTimeout(() => {
