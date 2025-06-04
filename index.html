@@ -141,6 +141,7 @@
       progressCircle.style.strokeDashoffset = offset;
     }
 
+    
     function startTimer() {
       if (isRunning) return;
 
@@ -151,6 +152,25 @@
       if (totalSeconds <= 0) {
         alert("Set a time greater than 0.");
         return;
+
+        countdown = setInterval(() => {
+  if (currentSeconds > 0) {
+    currentSeconds--;
+    updateDisplay();
+    updateCircle(); // <-- corrected
+  } else {
+    clearInterval(countdown);
+    isRunning = false;
+    updateCircle(); // <-- corrected
+    alarmSound.play();
+
+    setTimeout(() => {
+      alert("Time's up!");
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+    }, 100);
+  }
+}, 1000);
       }
 
       isRunning = true;
