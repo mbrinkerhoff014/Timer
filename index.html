@@ -176,17 +176,7 @@
     }
   }, 1000);
 }
-     
-  // Use setTimeout to show alert after sound starts playing
-  setTimeout(() => {
-    alert("Time's up!");
-    alarmSound.pause();
-    alarmSound.currentTime = 0;
-  }, 100);  // 100ms delay to allow sound to start
-}
-        }
-      }, 1000);
-    }
+  
 
     function pauseTimer() {
       clearInterval(countdown);
